@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import useApp from "./use-app";
 
 export const useAuth = () => {
-  const { user, setUser, setToken, token, setIsAuthenticated } = useApp();
+  const { user, setUser, setToken, token } = useApp();
 
   useEffect(() => {
     if (token) {
@@ -50,14 +50,12 @@ export const useAuth = () => {
   const saveUser = (res) => {
     if (res) {
       setItem("user", res);
-      setIsAuthenticated(true);
     }
   };
 
   const saveToken = async (token) => {
     if (token) {
       setItem("token", token);
-      setIsAuthenticated(true);
     }
   };
 
@@ -67,7 +65,6 @@ export const useAuth = () => {
     const refresh_token = getItem("refresh_token");
     if (user) {
       setUser(user);
-      setIsAuthenticated(true);
     }
     if (token) {
       setToken(token);

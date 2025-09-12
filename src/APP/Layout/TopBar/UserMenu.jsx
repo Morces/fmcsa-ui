@@ -13,45 +13,37 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { getInitials } from "@/lib/avatarUtils.js";
-import { Skeleton } from "@/components/ui/skeleton";
 import useApp from "@/hooks/use-app";
 import { useState } from "react";
 import defaultImg from "../../../assets/default.jpg";
+import useAuth from "@/hooks/use-auth";
 
 export const UserMenu = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   const { user } = useApp();
 
-  const handleLogout = async () => {};
+  const { logout } = useAuth();
 
-  if (isLoading) {
-    return (
-      <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-        <Skeleton className="h-9 w-9 rounded-full" />
-      </Button>
-    );
-  }
+  const handleLogout = async () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-10 w-10 rounded-full border border-gray-500"
+          className="relative h-10 w-10 rounded-full border border-gray-500 cursor-pointer"
         >
           <Avatar className="border-2 border-primary cursor-pointer">
             {user?.profile_image ? (
-              <AvatarImage
-                src={user?.profile_image_url || defaultImg}
-                alt={user?.individual_profile?.first_name || "User"}
-              />
+              <AvatarImage src={defaultImg} alt={user?.first_name || "User"} />
             ) : (
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {getInitials(
-                  `${user?.individual_profile?.first_name} ${user?.individual_profile?.last_name}` ||
-                    "John Doe"
+                  `${user?.first_name} ${user?.last_name}` || "John Doe"
                 )}
               </AvatarFallback>
             )}
@@ -72,13 +64,7 @@ export const UserMenu = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem
-            onClick={() => navigate("/banking-dashboard/profile")}
-          >
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/apps/settings")}>
+          <DropdownMenuItem onClick={() => navigate("/dashboard/settings")}>
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </DropdownMenuItem>

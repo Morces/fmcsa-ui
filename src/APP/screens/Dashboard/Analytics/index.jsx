@@ -135,7 +135,7 @@ const Analytics = () => {
       {/* Analytics Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="flex gap-3 w-full max-md:flex-wrap">
-          <TabsTrigger className="bg-white text-white" value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="drivers">Drivers</TabsTrigger>
           <TabsTrigger value="routes">Routes</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>

@@ -69,7 +69,7 @@ function BtnTemplate(props) {
 }
 
 function OpenBtn(props) {
-  const { label, active, Icon, color, click, collapseSideBar } = props;
+  const { label, active, Icon, click, collapseSideBar } = props;
 
   if (collapseSideBar) {
     return null;
@@ -77,23 +77,21 @@ function OpenBtn(props) {
 
   return (
     <div
-      className={`relative rounded-md py-1.5 flex items-center gap-x-2 cursor-pointer w-full  text-gray-800 ${
-        active ? "bg-white/40" : ""
+      className={`relative rounded-md py-1.5 flex items-center gap-x-2 cursor-pointer w-full  ${
+        active ? "bg-primary text-white" : "text-gray-800"
       }`}
       onClick={click}
     >
-      <span className={`text-2xl cursor-pointer px-2`} style={{ color: color }}>
+      <span className={`text-2xl cursor-pointer px-2`}>
         <Icon className={`text-sm font-light`} />
       </span>
-      <span className="text-sm font-semibold text-gray-700 cursor-pointer">
-        {label}
-      </span>
+      <span className="text-sm font-semibold cursor-pointer">{label}</span>
     </div>
   );
 }
 
 function ClosedBtn(props) {
-  const { active, Icon, color, click, collapseSideBar } = props;
+  const { active, Icon, click, collapseSideBar } = props;
 
   if (!collapseSideBar) {
     return null;
@@ -105,9 +103,11 @@ function ClosedBtn(props) {
       onClick={click}
     >
       <span
-        className={`text-xl ${active ? " px-2 rounded-lg bg-white/30" : ""} `}
+        className={`text-xl ${
+          active ? " p-2 rounded-lg bg-primary text-white" : ""
+        } `}
       >
-        <span className="text-2xl" style={{ color: color }}>
+        <span className="text-2xl">
           <Icon />
         </span>
       </span>

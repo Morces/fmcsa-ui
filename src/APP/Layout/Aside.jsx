@@ -20,7 +20,7 @@ function Aside(props) {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full flex flex-col gap-y-6 transition-transform duration-300 border-r  ${
+      className={`fixed top-0 left-0 h-full flex flex-col gap-y-6 px-4 transition-transform duration-300 border-r  ${
         sideBarOpen ? "translate-x-0" : "-translate-x-full"
       } ${device === "sm" ? "absolute z-40" : ""} ${
         device === "sm" && sideBarOpen && "w-[230px]"

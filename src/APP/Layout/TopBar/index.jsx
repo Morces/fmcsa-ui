@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 const Topbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const isMobile = useIsMobile();
-  const { sideBarOpen, setSideBarOpen, setCollapseSideBar } = useApp();
+  const { sideBarOpen, setSideBarOpen, setCollapseSideBar, user } = useApp();
 
   const navigate = useNavigate();
 
@@ -50,20 +50,20 @@ const Topbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   return (
-    <div className="h-16 backdrop-blur-md shadow-sm z-10 px-4 text-primary-foreground bg-primary sticky top-0">
+    <div className="h-22 backdrop-blur-md shadow-sm z-10 px-4 text-primary-foreground bg-primary sticky top-0">
       <div className="flex items-center justify-between h-full">
         <div className="flex items-center gap-4">
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={toggle}
             className="text-primary-foreground hover:bg-primary-foreground/20 cursor-pointer"
           >
-            <Menu size={24} className="text-primary-foreground" />
+            <Menu size={24} className="text-gray-200" />
             <span className="sr-only">Toggle sidebar</span>
           </Button>
 

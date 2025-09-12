@@ -12,7 +12,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useNavigate } from "react-router";
-import { useAuth } from "@/hooks/use-auth";
+import useAuth from "@/hooks/use-auth";
+import useAxios from "@/hooks/use-axios";
+import useApp from "../../../hooks/use-app";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -20,15 +22,57 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { saveToken, saveUser } = useAuth();
 
+  const { setIsAuthenticated, setUser } = useApp();
+
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    setLoading(true);
+  const request = useAxios();
+
+  const handleGetUser = async (token) => {
+    let res = await request({
+      method: "GET",
+      url: "auth/me/",
+      show_loading: false,
+      show_message: false,
+      require_token: true,
+      custom_token: token,
+    });
+
+    if (res?.error) return;
+
+    setUser(res);
+    saveUser(res);
     navigate("/dashboard");
   };
 
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    const data = {
+      username,
+      password,
+    };
+
+    let res = await request({
+      method: "POST",
+      url: "auth/login/",
+      body: data,
+      show_success: true,
+      success_message: "Login successful!",
+    });
+
+    if (res?.access) {
+      await saveToken(res?.access);
+      setIsAuthenticated(true);
+      await handleGetUser(res?.access);
+    } else {
+      setLoading(false);
+      return;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5 p-4">
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -99,10 +143,10 @@ const Login = () => {
               </Button>
             </div>
 
-            {/* <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
+            <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground">
               <p>Demo Credentials:</p>
-              <p className="font-mono">admin / password123</p>
-            </div> */}
+              <p className="font-mono">Username: morces | Password:123456</p>
+            </div>
           </CardContent>
         </Card>
       </motion.div>

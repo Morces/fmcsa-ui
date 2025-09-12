@@ -3,6 +3,7 @@ import AppContext from "./AppContext";
 import LoadingModal from "../../components/modals/LoadingModal";
 import useDevice from "../../hooks/useDevice";
 import useAuth from "../../hooks/use-auth";
+import useAxios from "@/hooks/use-axios";
 import { Toaster } from "sonner";
 
 const Provider = ({ children }) => {
@@ -18,11 +19,13 @@ const Provider = ({ children }) => {
   const [sideBarOpen, setSideBarOpen] = useState(true);
   const [collapseSideBar, setCollapseSideBar] = useState(false);
 
-  const { getItem, saveUser } = useAuth();
+  const { saveUser } = useAuth();
 
-  const ourToken = getItem("token");
+  const request = useAxios();
 
-  const ourUser = getItem("user");
+  const ourToken = localStorage.getItem("token");
+
+  const ourUser = localStorage.getItem("user");
 
   useEffect(() => {
     if (ourToken) {
@@ -35,15 +38,16 @@ const Provider = ({ children }) => {
   }, [ourToken]);
 
   const getUser = async () => {
-    // let res = await request({
-    //   method: "GET",
-    //   url: "auth/me",
-    //   show_loading: false,
-    //   show_success: false,
-    // });
-    // if (res?.error) return;
-    // setUser(res);
-    // saveUser(res);
+    let res = await request({
+      method: "GET",
+      url: "auth/me/",
+      show_loading: false,
+      show_success: false,
+      custom_token: ourToken,
+    });
+    if (res?.error) return;
+    setUser(res);
+    saveUser(res);
   };
 
   useEffect(() => {
