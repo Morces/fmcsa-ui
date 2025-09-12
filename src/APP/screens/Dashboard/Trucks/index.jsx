@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -25,6 +25,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useAxios from "@/hooks/use-axios";
+import ClipLoader from "react-spinners/ClipLoader";
+import AddModal from "./AddModal";
 
 // Mock trucks data
 const trucksData = [
@@ -109,13 +112,41 @@ const getFuelColor = (level) => {
 
 const Trucks = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredTrucks, setFilteredTrucks] = useState(trucksData);
+  const [filteredTrucks, setFilteredTrucks] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [showAdd, setShowAdd] = useState(false);
+
+  const refetchTrucks = () => getTrucks();
+
+  const request = useAxios();
+
+  useEffect(() => {
+    getTrucks();
+  }, []);
+
+  async function getTrucks() {
+    setLoading(true);
+    let res = await request({
+      method: "GET",
+      url: "trucks/",
+      show_loading: false,
+    });
+
+    if (res?.error) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+    setFilteredTrucks(res);
+  }
 
   const handleSearch = (value) => {
     setSearchTerm(value);
     const filtered = trucksData.filter(
       (truck) =>
-        truck.truckNumber.toLowerCase().includes(value.toLowerCase()) ||
         truck.make.toLowerCase().includes(value.toLowerCase()) ||
         truck.model.toLowerCase().includes(value.toLowerCase()) ||
         truck.vin.toLowerCase().includes(value.toLowerCase())
@@ -133,9 +164,9 @@ const Trucks = () => {
             Manage your fleet vehicles and monitor their status
           </p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={() => setShowAdd(true)}>
           <Plus className="h-4 w-4" />
-          Add Truck
+          Add A Truck
         </Button>
       </div>
 
@@ -159,152 +190,165 @@ const Trucks = () => {
       </Card>
 
       {/* Trucks Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTrucks.map((truck, index) => (
-          <motion.div
-            key={truck.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Card className="hover:shadow-md transition-shadow duration-200">
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-lg">
-                      {truck.truckNumber}
-                    </CardTitle>
-                    <CardDescription>
-                      {truck.year} {truck.make} {truck.model}
-                    </CardDescription>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Badge className={statusColors[truck.status]}>
-                      {truck.status}
-                    </Badge>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit Truck</DropdownMenuItem>
-                        <DropdownMenuItem>View History</DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Schedule Maintenance
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          Mark Out of Service
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="pt-0">
-                <div className="space-y-4">
-                  {/* Current Assignment */}
-                  {truck.currentDriver && (
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-1">
-                        Current Driver
+      <div>
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <ClipLoader loading={loading} />
+          </div>
+        ) : filteredTrucks?.length === 0 ? (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <div className="text-muted-foreground mb-4">
+                No trucks found matching your search criteria.
+              </div>
+              <Button variant="outline" onClick={() => setShowAdd(true)}>
+                Add New Truck
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTrucks.map((truck, index) => (
+              <motion.div
+                key={truck.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="hover:shadow-md transition-shadow duration-200">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="text-lg">
+                          {truck?.truckNumber || ""}
+                        </CardTitle>
+                        <CardDescription>
+                          {truck?.year} {truck?.make_model}
+                        </CardDescription>
                       </div>
-                      <div className="font-medium text-foreground">
-                        {truck.currentDriver}
+
+                      <div className="flex items-center gap-2">
+                        {/* <Badge className={statusColors[truck.status]}>
+                          {truck.status}
+                        </Badge> */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>Edit Truck</DropdownMenuItem>
+                            <DropdownMenuItem>View History</DropdownMenuItem>
+                            <DropdownMenuItem>
+                              Schedule Maintenance
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">
+                              Mark Out of Service
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-                      {truck.currentTrip && (
-                        <div className="text-sm text-muted-foreground">
-                          Trip: {truck.currentTrip}
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-0">
+                    <div className="space-y-4">
+                      {/* Current Assignment */}
+                      {truck?.currentDriver && (
+                        <div>
+                          <div className="text-sm text-muted-foreground mb-1">
+                            Current Driver
+                          </div>
+                          <div className="font-medium text-foreground">
+                            {truck?.currentDriver}
+                          </div>
+                          {truck.currentTrip && (
+                            <div className="text-sm text-muted-foreground">
+                              Trip: {truck?.currentTrip}
+                            </div>
+                          )}
                         </div>
                       )}
-                    </div>
-                  )}
 
-                  {/* Location */}
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
-                      <div className="text-sm text-muted-foreground">
-                        Current Location
+                      {/* Location */}
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <div>
+                          <div className="text-sm text-muted-foreground">
+                            Current Location
+                          </div>
+                          <div className="text-sm font-medium text-foreground">
+                            {truck?.location}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-sm font-medium text-foreground">
-                        {truck.location}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Fuel Level */}
-                  <div className="flex items-center gap-2">
-                    <Fuel className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-muted-foreground">
-                          Fuel Level
+                      {/* Fuel Level */}
+                      <div className="flex items-center gap-2">
+                        <Fuel className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between text-sm mb-1">
+                            <span className="text-muted-foreground">
+                              Fuel Level
+                            </span>
+                            <span className="font-medium text-foreground">
+                              {truck?.fuelLevel}%
+                            </span>
+                          </div>
+                          <Progress value={truck?.fuelLevel} className="h-2" />
+                        </div>
+                      </div>
+
+                      {/* Mileage */}
+                      {/* <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">
+                          Mileage
                         </span>
-                        <span className="font-medium text-foreground">
-                          {truck.fuelLevel}%
+                        <span className="text-sm font-medium text-foreground">
+                          {truck?.mileage.toLocaleString()} mi
                         </span>
+                      </div> */}
+
+                      {/* Maintenance */}
+                      <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+                        <Wrench className="h-4 w-4 text-warning mt-0.5" />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-foreground">
+                            {truck?.maintenanceDue}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Due: {truck?.nextMaintenance}
+                          </div>
+                        </div>
                       </div>
-                      <Progress value={truck.fuelLevel} className="h-2" />
-                    </div>
-                  </div>
 
-                  {/* Mileage */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Mileage
-                    </span>
-                    <span className="text-sm font-medium text-foreground">
-                      {truck.mileage.toLocaleString()} mi
-                    </span>
-                  </div>
-
-                  {/* Maintenance */}
-                  <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
-                    <Wrench className="h-4 w-4 text-warning mt-0.5" />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-foreground">
-                        {truck.maintenanceDue}
+                      {/* VIN */}
+                      <div className="pt-2 border-t border-border">
+                        <div className="text-xs text-muted-foreground">
+                          VIN: {truck?.vin}
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        Due: {truck.nextMaintenance}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* VIN */}
-                  <div className="pt-2 border-t border-border">
-                    <div className="text-xs text-muted-foreground">
-                      VIN: {truck.vin}
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Details
+                      </Button>
                     </div>
-                  </div>
-
-                  <Button variant="outline" size="sm" className="w-full">
-                    View Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Empty State */}
-      {filteredTrucks.length === 0 && (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <div className="text-muted-foreground mb-4">
-              No trucks found matching your search criteria.
-            </div>
-            <Button variant="outline" onClick={() => handleSearch("")}>
-              Clear Search
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      {/* Modals */}
+
+      <AddModal
+        showAdd={showAdd}
+        setShowAdd={setShowAdd}
+        refetchTrucks={refetchTrucks}
+      />
     </div>
   );
 };

@@ -77,9 +77,7 @@ export const useAuth = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("refresh_token");
-    setUser(null);
     setToken(null);
-    setIsAuthenticated(false);
   };
 
   return {
