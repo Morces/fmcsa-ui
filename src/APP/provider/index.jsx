@@ -35,7 +35,7 @@ const Provider = ({ children }) => {
     if (ourUser) {
       setUser(ourUser);
     }
-  }, [ourToken]);
+  }, [ourToken, ourUser]);
 
   const getUser = async () => {
     let res = await request({

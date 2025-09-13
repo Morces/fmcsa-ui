@@ -10,6 +10,7 @@ import Trips from "../screens/Dashboard/Trips";
 import Analytics from "../screens/Dashboard/Analytics";
 import Settings from "../screens/Dashboard/Settings";
 import NotFound from "../screens/NotFound";
+import AddTrip from "../screens/Dashboard/Trips/Add";
 
 const AppRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const AppRoutes = () => {
           <Route path="/dashboard/drivers" element={<Drivers />} />
           <Route path="/dashboard/trucks" element={<Trucks />} />
           <Route path="/dashboard/trips" element={<Trips />} />
+          <Route path="/dashboard/trips/add" element={<AddTrip />} />
           <Route path="/dashboard/analytics" element={<Analytics />} />
           <Route path="/dashboard/settings" element={<Settings />} />
         </Route>

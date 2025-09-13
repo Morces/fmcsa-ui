@@ -20,7 +20,7 @@ const BasicModal = ({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        {children}
+        <div className="max-h-[85vh] overflow-y-auto">{children}</div>
       </DialogContent>
     </Dialog>
   );

@@ -22,70 +22,6 @@ import ClipLoader from "react-spinners/ClipLoader";
 import useAxios from "@/hooks/use-axios";
 import AddModal from "./components/AddModal";
 
-// Mock drivers data
-const driversData = [
-  {
-    id: 1,
-    name: "John Smith",
-    email: "john.smith@company.com",
-    phone: "(555) 123-4567",
-    licenseNumber: "DL123456789",
-    status: "Active",
-    currentTrip: "TRP-001",
-    hoursUsed: "6.5/11",
-    cycleHours: "45/70",
-    joinDate: "2022-03-15",
-  },
-  {
-    id: 2,
-    name: "Maria Garcia",
-    email: "maria.garcia@company.com",
-    phone: "(555) 234-5678",
-    licenseNumber: "DL987654321",
-    status: "Active",
-    currentTrip: "TRP-002",
-    hoursUsed: "2.0/11",
-    cycleHours: "28/70",
-    joinDate: "2023-01-20",
-  },
-  {
-    id: 3,
-    name: "Robert Johnson",
-    email: "robert.johnson@company.com",
-    phone: "(555) 345-6789",
-    licenseNumber: "DL456789123",
-    status: "Off Duty",
-    currentTrip: null,
-    hoursUsed: "0/11",
-    cycleHours: "35/70",
-    joinDate: "2021-11-08",
-  },
-  {
-    id: 4,
-    name: "Sarah Wilson",
-    email: "sarah.wilson@company.com",
-    phone: "(555) 456-7890",
-    licenseNumber: "DL789123456",
-    status: "Active",
-    currentTrip: "TRP-003",
-    hoursUsed: "9.2/11",
-    cycleHours: "62/70",
-    joinDate: "2022-07-12",
-  },
-  {
-    id: 5,
-    name: "Michael Brown",
-    email: "michael.brown@company.com",
-    phone: "(555) 567-8901",
-    licenseNumber: "DL321654987",
-    status: "Inactive",
-    currentTrip: null,
-    hoursUsed: "0/11",
-    cycleHours: "15/70",
-    joinDate: "2023-05-30",
-  },
-];
-
 const statusColors = {
   Active: "status-active",
   "Off Duty": "status-warning",
@@ -126,11 +62,11 @@ const Drivers = () => {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
-    const filtered = driversData.filter(
+    const filtered = filteredDrivers.filter(
       (driver) =>
         driver.name.toLowerCase().includes(value.toLowerCase()) ||
         driver.email.toLowerCase().includes(value.toLowerCase()) ||
-        driver.licenseNumber.toLowerCase().includes(value.toLowerCase())
+        driver.license_number.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredDrivers(filtered);
   };
@@ -298,8 +234,9 @@ const Drivers = () => {
             <div className="text-muted-foreground mb-4">
               No drivers found matching your search criteria.
             </div>
-            <Button variant="outline" onClick={() => handleSearch("")}>
-              Clear Search
+            <Button variant="outline" onClick={() => setShowAdd(true)}>
+              <Plus />
+              Add A Driver
             </Button>
           </CardContent>
         </Card>

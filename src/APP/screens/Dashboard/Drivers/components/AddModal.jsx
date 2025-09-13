@@ -32,6 +32,11 @@ const AddModal = ({ showAdd, setShowAdd, refetchDrivers }) => {
       return;
     }
 
+    setName("");
+    setLicenceNumber("");
+    setPhone("");
+    setEmail("");
+    
     setLoading(false);
     refetchDrivers();
     setShowAdd(false);
