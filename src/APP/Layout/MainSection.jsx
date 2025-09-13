@@ -8,7 +8,7 @@ function MainSection(props) {
   return (
     <div
       className={`
-        "w-full h-full flex-1 overflow-y-auto transition-all duration-300 bg-white",
+        "w-full h-full flex-1 overflow-y-auto transition-all duration-300",
         ${
           device !== "sm" &&
           (collapseSideBar ? "ml-24" : sideBarOpen ? "ml-[184px]" : "")

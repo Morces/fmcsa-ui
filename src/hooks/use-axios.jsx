@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import useApp from "./use-app";
 import useAuth from "./use-auth";
 
-const baseUrl = "http://127.0.0.1:8000/api";
+const baseUrl = "https://fmsca-api.vpmtechlab.com/api";
 
 const useAxios = () => {
   const { setIsLoading, token, setToken } = useApp();
