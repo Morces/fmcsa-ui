@@ -19,6 +19,8 @@ import KPICard from "./components/KPICard";
 import RecentTrips from "./components/RecentTrips";
 import DriverStatus from "./components/DriverStatus";
 import FleetMetrics from "./components/FleetMetrics";
+import useAxios from "@/hooks/use-axios";
+import { useEffect, useState } from "react";
 
 // Mock data
 const kpiData = [
@@ -74,6 +76,25 @@ const alertsData = [
 ];
 
 const Dashboard = () => {
+  const request = useAxios();
+
+  const [trips, setTrips] = useState([]);
+
+  useEffect(() => {
+    getTrips();
+  }, []);
+
+  async function getTrips() {
+    let res = await request({
+      method: "GET",
+      url: "trips/",
+      show_loading: false,
+    });
+
+    if (res?.error) return;
+    setTrips(res);
+  }
+
   return (
     <div className="space-y-6 m-5">
       {/* Header */}
@@ -104,7 +125,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Trips */}
         <div className="lg:col-span-2">
-          <RecentTrips />
+          <RecentTrips trips={trips} />
         </div>
 
         {/* Alerts */}

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
 
 // Mock data
 const recentTrips = [
@@ -54,7 +55,8 @@ const statusColors = {
   Delayed: "bg-warning/10 text-warning",
 };
 
-const RecentTrips = () => {
+const RecentTrips = ({ trips }) => {
+  const navigate = useNavigate();
   return (
     <Card>
       <CardHeader>
@@ -65,14 +67,18 @@ const RecentTrips = () => {
               Latest fleet activities and trip status
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/dashboard/trips")}
+          >
             View All Trips
           </Button>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {recentTrips.map((trip, index) => (
+          {trips?.map((trip, index) => (
             <motion.div
               key={trip.id}
               initial={{ opacity: 0, y: 20 }}
@@ -82,7 +88,7 @@ const RecentTrips = () => {
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="font-medium text-foreground">{trip.id}</div>
+                  {/* <div className="font-medium text-foreground">{trip.id}</div> */}
                   <Badge className={statusColors[trip.status]}>
                     {trip.status}
                   </Badge>
@@ -95,39 +101,43 @@ const RecentTrips = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-foreground">{trip.driver}</span>
+                  <span className="text-sm text-foreground">
+                    {trip?.driver?.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Truck className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-foreground">{trip.truck}</span>
+                  <span className="text-sm text-foreground">
+                    {trip?.truck?.plate_number}
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 mb-3">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-foreground">
-                  {trip.origin} → {trip.destination}
+                  {trip?.pickup_location?.name} → {trip?.dropoff_location?.name}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  ETA: {trip.estimatedArrival}
+                  {/* ETA: {trip.estimatedArrival} */}
                 </div>
 
-                {trip.status === "In Transit" && (
+                {trip.status === "In Progress" && (
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-muted rounded-full h-2 w-24">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: `${trip.progress}%` }}
+                        animate={{ width: `${trip?.progress || 50}%` }}
                         transition={{ duration: 0.8, delay: 0.3 }}
                         className="h-2 bg-primary rounded-full"
                       />
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      {trip.progress}%
+                      {trip?.progress || 50}%
                     </span>
                   </div>
                 )}
